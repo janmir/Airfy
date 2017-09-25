@@ -6,9 +6,11 @@ load('api_esp8266.js');
 load('api_http.js');
 load('api_gpio.js');
 load('api_sys.js');
+load('api_net.js');
 
 print('---Onload---');
 let led = 2;
+let isConnected = -1;
 let getInfo = function() {
         return JSON.stringify({
             total_ram: Sys.total_ram(),
@@ -17,11 +19,12 @@ let getInfo = function() {
     };
 
 print('---Info', getInfo(), '---');
-RPC.addHandler('Sum', function(args) {
-    return args.a + args.b;
-});
 
-function enable(){
+function setDefaultAP(){
+    print('---Manually Setting Default Access Point Settings.'); 
+}
+
+function enableAccessPoint(){
     print('---Manually Enabling Access Point.');            
 
     //Not connected enable AP
@@ -61,12 +64,14 @@ let tCheck = Timer.set(5000, false, function(){
                     print('---Not Enabled Yet.');            
                     
                     //Enable AP
-                    enable();
+                    enableAccessPoint();
                 }else{
                     print('---Already Enabled, waiting for user input.');            
                     print('---End---');
                 }
-            }, null);        
+            }, null);
+            
+            isConnected = 0;
         }
 
         //Connected stop blinking
@@ -85,3 +90,39 @@ let tCheck = Timer.set(5000, false, function(){
 //let tFile = Timer.set(1000, true, function() {
 //    print('Time:', Timer.now());
 //}, null);
+
+// Monitor network connectivity.
+Net.setStatusEventHandler(function(ev, arg) {
+    let evs = '???';
+    if (ev === Net.STATUS_DISCONNECTED) {
+      evs = 'DISCONNECTED';
+      isConnected = 0;
+    } else if (ev === Net.STATUS_CONNECTING) {
+      evs = 'CONNECTING';
+      isConnected = -1;
+    } else if (ev === Net.STATUS_CONNECTED) {
+      evs = 'CONNECTED';
+      isConnected = -1;
+    } else if (ev === Net.STATUS_GOT_IP) {
+      evs = 'GOT_IP';
+      isConnected = 1;
+
+      HTTP.query({
+        url: "https://api.janmir.me/aws-odtr-v2/check?username=jp.miranda&password=awsol%2B123",
+        //url: "https://janmir.me",
+        success: function(body, msg){
+            print('---Body:', body);
+            //print('---Msg:', msg);
+        },
+        error: function(error){
+            print('---Error:', error);
+        }
+    });
+    }
+    print('---Net event:', ev, evs, '---');
+  }, null);
+
+//For Handling Front-end
+RPC.addHandler('Wifi.Connected', function(args) {
+    return {"connected" : isConnected > 0 ? true : false};
+});
