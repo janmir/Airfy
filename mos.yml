@@ -1,6 +1,7 @@
 author: mongoose-os
 description: A Mongoose OS app skeleton
 version: 1.0
+platform: esp8266
 
 libs_version: ${mos.version}
 modules_version: ${mos.version}
@@ -48,6 +49,8 @@ filesystem:
 
 # List of libraries used by this app, in order of initialisation
 libs:
+  - origin: https://github.com/mongoose-os-libs/rpc-common
+  - origin: https://github.com/mongoose-os-libs/rpc-loopback
   - origin: https://github.com/mongoose-os-libs/mjs
   - origin: https://github.com/mongoose-os-libs/ca-bundle
   - origin: https://github.com/mongoose-os-libs/i2c
