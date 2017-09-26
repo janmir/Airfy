@@ -34,7 +34,7 @@ config_schema:
   - ["config.blinky03", "i", 3, {title: "Third blinky-blinky."}]
   - ["config.clock", "i", 4, {title: "Clock pin for RTP."}]
   - ["config.ir", "i", 4, {title: "Infrared pin."}]
-  - ["config.initWait", "i", 60, {title: "Initialization wait time in seconds."}]
+  - ["config.initWait", "i", 30, {title: "Initialization wait time in seconds."}]
   - ["config.blinkWait", "i", 500, {title: "Blink wait time in miliseconds."}]
   - ["config.mqttTopic", "s", "airfy/device0", {title: "Blink wait time in miliseconds."}]
 #  - ["my_app.bool_value", "b", false, {title: "Some boolean value"}]

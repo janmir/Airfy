@@ -68,10 +68,13 @@ print('---Info', getInfo(), '---');
 startConnectionBlink();
 
 //Wait 20 secs for connection
-tCheck = Timer.set(initWait, false, function(){
+tCheck = Timer.set(initWait, true, function(){
     print('---Initialization---');                
 
-    let message = getInfo();
+    let message = JSON.stringify({
+        total_ram: Sys.total_ram(),
+        free_ram: Sys.free_ram()
+      });
     let ok = MQTT.pub(topic, message, 1);
     
     //call connection check
@@ -112,7 +115,8 @@ tCheck = Timer.set(initWait, false, function(){
 
         //Connected stop blinking
         Timer.del(tBlink);
-
+        Timer.del(tCheck);
+        
         //set to default
         GPIO.write(led_2, 0);
     }, null);
