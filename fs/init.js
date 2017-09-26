@@ -72,6 +72,7 @@ tCheck = Timer.set(initWait, true, function(){
     print('---Initialization---');                
 
     let message = JSON.stringify({
+        "for": "name",
         total_ram: Sys.total_ram(),
         free_ram: Sys.free_ram()
       });
