@@ -1,7 +1,9 @@
-author: mongoose-os
-description: A Mongoose OS app skeleton
+author: janmir
+description: Simple IR remote with wifi.
 version: 1.0
 platform: esp8266
+
+region: ap-northeast-1
 
 libs_version: ${mos.version}
 modules_version: ${mos.version}
@@ -10,6 +12,8 @@ mongoose_os_version: ${mos.version}
 # Optional. List of tags for online search.
 tags:
   - c
+  - js
+  - ir
 
 # List of files / directories with C sources. No slashes at the end of dir names.
 sources:
@@ -23,8 +27,16 @@ filesystem:
 # Below is a custom firmware configuration example.
 # Uncomment and modify according to your needs:
 
-# config_schema:
-#  - ["my_app", "o", {title: "My app custom settings"}]
+config_schema:
+  - ["config", "o", {title: "My app custom settings"}]
+  - ["config.blinky01", "i", 1, {title: "First blinky-blinky."}]
+  - ["config.blinky02", "i", 2, {title: "Second blinky-blinky."}]
+  - ["config.blinky03", "i", 3, {title: "Third blinky-blinky."}]
+  - ["config.clock", "i", 4, {title: "Clock pin for RTP."}]
+  - ["config.ir", "i", 4, {title: "Infrared pin."}]
+  - ["config.initWait", "i", 60, {title: "Initialization wait time in seconds."}]
+  - ["config.blinkWait", "i", 500, {title: "Blink wait time in miliseconds."}]
+  - ["config.mqttTopic", "s", "airfy/device0", {title: "Blink wait time in miliseconds."}]
 #  - ["my_app.bool_value", "b", false, {title: "Some boolean value"}]
 #  - ["my_app.string_value", "s", "", {title: "Some string value"}]
 #  - ["my_app.int_value", "i", 123, {title: "Some integer value"}]
@@ -61,6 +73,7 @@ libs:
   - origin: https://github.com/mongoose-os-libs/rpc-uart
   - origin: https://github.com/mongoose-os-libs/spi
   - origin: https://github.com/mongoose-os-libs/wifi
+  - origin: https://github.com/mongoose-os-libs/rpc-mqtt
 
 # Used by the mos tool to catch mos binaries incompatible with this file format
 manifest_version: 2017-05-18
