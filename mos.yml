@@ -28,15 +28,23 @@ filesystem:
 # Uncomment and modify according to your needs:
 
 config_schema:
+  # Custom
   - ["config", "o", {title: "My app custom settings"}]
   - ["config.blinky01", "i", 1, {title: "First blinky-blinky."}]
   - ["config.blinky02", "i", 2, {title: "Second blinky-blinky."}]
   - ["config.blinky03", "i", 3, {title: "Third blinky-blinky."}]
   - ["config.clock", "i", 4, {title: "Clock pin for RTP."}]
   - ["config.ir", "i", 4, {title: "Infrared pin."}]
-  - ["config.initWait", "i", 30, {title: "Initialization wait time in seconds."}]
+  - ["config.initWait01", "i", 30, {title: "Initialization wait time in seconds."}]
+  - ["config.initWait02", "i", 10, {title: "Initialization wait time in seconds."}]
+  - ["config.initWait03", "i", 60, {title: "Initialization wait time in seconds."}]
   - ["config.blinkWait", "i", 500, {title: "Blink wait time in miliseconds."}]
-  - ["config.mqttTopic", "s", "airfy/device0", {title: "Blink wait time in miliseconds."}]
+  - ["config.mqttTopic", "s", "airfy/device0", {title: "MQTT topic."}]
+
+  # Overrides
+  - ["wifi.ap.ssid", "s", "Airfy", {title: "Defualt SSID."}]
+  - ["wifi.ap.pass", "s", "Apple999", {title: "Defualt Password."}]
+
 #  - ["my_app.bool_value", "b", false, {title: "Some boolean value"}]
 #  - ["my_app.string_value", "s", "", {title: "Some string value"}]
 #  - ["my_app.int_value", "i", 123, {title: "Some integer value"}]
@@ -74,6 +82,7 @@ libs:
   - origin: https://github.com/mongoose-os-libs/spi
   - origin: https://github.com/mongoose-os-libs/wifi
   - origin: https://github.com/mongoose-os-libs/rpc-mqtt
+  - origin: https://github.com/mongoose-os-libs/aws
 
 # Used by the mos tool to catch mos binaries incompatible with this file format
 manifest_version: 2017-05-18
