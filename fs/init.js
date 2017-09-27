@@ -32,7 +32,8 @@ let isMQTTReady = false;
 let sysInfo = null;
 
 //MQTT
-let topic = Cfg.get('config.mqttTopic');
+let pTopic = Cfg.get('config.mqttPubTopic');
+let sTopic = Cfg.get('config.mqttSubTopic');
 
 //Timers
 let tCheck = 0;
@@ -162,9 +163,13 @@ function initProcess(){
 
                 //Add status
                 status++;
-                                
+
+                print('---MQTT establishing subcription---');                                
+                //Start subscription
+                mqttSubscribe();
+
                 //Start a MQTT check
-                tCheck = startClock(10000, initProcess);
+                tCheck = startClock(30000, initProcess);
             }else{
                 print('---Device Loading...---');
             }
@@ -195,7 +200,7 @@ function initProcess(){
             print('---Device Loading...---');
         }
     }else if(status === 2){
-        //Device Shadow update
+        //Device Shadow update & subscription
         print('---Device Shadow Update---');                        
 
         //Start blink led 2 for nex stage
@@ -238,8 +243,29 @@ function loopMain(){
         free_ram: (Sys.free_ram() / Sys.total_ram()) * 100
     });
 
-    let ok = MQTT.pub(topic, message, 1);
+    let ok = MQTT.pub(pTopic, message, 1);
     print('---MQTT Publish Results: ', ok, '---');
+}
+
+function mqttSubscribe(){
+    // Subscribe to the topic to ring the bell
+    MQTT.sub(sTopic, function(conn, topic, msg) {
+        print('---MQTT Message Recieved---');
+        print('---Topic:', topic, ', Message:', msg, '---');
+        
+        /*let obj = JSON.parse(msg);
+
+        if(obj.number === bellNumber || obj.number === 0){ //use bell #0 to ring all the bells
+        print('ok');
+        GPIO.write(relayPin, 1);
+        Sys.usleep(20000); //wait for 20msec
+        GPIO.write(relayPin, 0);
+        Sys.usleep(200000); //wait for 200msec
+        GPIO.write(relayPin, 1);
+        Sys.usleep(20000); //wait for 20msec
+        GPIO.write(relayPin, 0);
+        }*/
+    }, null);
 }
 
 /***********************************************************/

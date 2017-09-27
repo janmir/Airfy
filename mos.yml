@@ -39,7 +39,10 @@ config_schema:
   - ["config.initWait02", "i", 10, {title: "Initialization wait time in seconds."}]
   - ["config.initWait03", "i", 60, {title: "Initialization wait time in seconds."}]
   - ["config.blinkWait", "i", 500, {title: "Blink wait time in miliseconds."}]
-  - ["config.mqttTopic", "s", "airfy/device0", {title: "MQTT topic."}]
+  
+  # MQTT
+  - ["config.mqttPubTopic", "s", "airfy/pub/device0", {title: "MQTT topic."}]
+  - ["config.mqttSubTopic", "s", "airfy/sub/device0", {title: "MQTT topic."}]
 
   # Overrides
   - ["wifi.ap.ssid", "s", "Airfy", {title: "Defualt SSID."}]
