@@ -9,6 +9,7 @@ load('api_sys.js');
 load('api_net.js');
 load('api_mqtt.js');
 load('api_aws.js');
+load('api_ds3231.js');
 
 let led01 = Cfg.get('config.blinky02');
 let led02 = Cfg.get('config.blinky02');
@@ -42,11 +43,14 @@ let tCheck = 0;
 let tBlink = 0;
 let tMainLoop = 0;
 
+//I2C
+let DS3231_I2C_addresss = 104;
+let rtc = DS3231.create(DS3231_I2C_addresss);
+
 //Set GPIO to output
 //GPIO.set_mode(led01, GPIO.MODE_OUTPUT);
 GPIO.set_mode(led02, GPIO.MODE_OUTPUT);
 //GPIO.set_mode(led03, GPIO.MODE_OUTPUT);
-
 
 /***********************************************************/
 /*                                                         */
@@ -61,6 +65,30 @@ function getInfo() {
         total_ram: Sys.total_ram(),
         free_ram: Sys.free_ram()
     });
+}
+
+function setDate(d, m, y) {
+	rtc.setTimeDate(d);
+	rtc.setTimeMonth(m);
+	rtc.setTimeYear(y);
+}
+
+function setTime(h, m, s) {
+	rtc.setTimeSeconds(s);
+	rtc.setTimeMinutes(m);
+	rtc.setTimeHours(h);
+}
+
+function getDate() {
+	return  JSON.stringify(rtc.getTimeMonth()) + "/" + 
+            JSON.stringify(rtc.getTimeDate()) + "/" + 
+            JSON.stringify(rtc.getTimeYear());
+}
+
+function getTime() {
+	return  JSON.stringify(rtc.getTimeHours()) + ":" + 
+            JSON.stringify(rtc.getTimeMinutes()) + ":" + 
+            JSON.stringify(rtc.getTimeSeconds());
 }
 
 function enableAccessPoint(){
@@ -109,77 +137,68 @@ function initProcess(){
     if(status === 0){
         //Connection check
         print('---Connection Check---');                
-        
-        RPC.call(RPC.LOCAL, 'Sys.GetInfo', {}, function (res, ud) {
-    
-            print('Response:', JSON.stringify(res));            
-            sysInfo = res;
-    
-            if(sysInfo.wifi.status === "disconnected"){
-    
-                print('---Unable to connect device.');
-                if(initWait === w01){
-                    initWait = w02;
-                }else if(initWait === w02){
-                    //Check if already enabled
-                    RPC.call(RPC.LOCAL, 'Config.Get', {"key": "wifi.ap.enable"}, function (res, ud) {
-                        if(res !== true){
-                            print('---Access Point Not Enabled Yet.');            
-                            
-                            //Enable AP
-                            enableAccessPoint();
-                        }else{
-                            print('---Access Point Already Enabled, waiting for user input.');
-                            
-                            //Check AP SSID
-                        }
-                    }, null);
-                    initWait = w03;
-                }else if(initWait === w03){
-                    //Do something after the last minute wait
+            
+        if(!isConnected){
+            print('---Unable to connect device.');
 
-                    //Start!
-                    start();
+            if(initWait === w01){
+                initWait = w02;
+            }else if(initWait === w02){
+                //Check if already enabled
+                if(Cfg.get('wifi.ap.enable') !== true){
+                    print('---Access Point Not Enabled Yet.');            
+                    
+                    //Enable AP
+                    enableAccessPoint();
+                }else{
+                    print('---Access Point Already Enabled, waiting for user input.');
+                    
+                    //Check AP SSID
                 }
-    
-                print('---Increasing wait time to', initWait);
-    
-                //Connected stop checking
-                Timer.del(tCheck);            
-    
-                //Restart Checking
-                tCheck = startClock(initWait, initProcess);
-    
-            }else if (isConnected && sysInfo.wifi.status === "got ip"){
-                print('---Device connected to', sysInfo.wifi.ssid, '---');
-                
-                //Disable the Access Point should be done by web interface
-    
-                print('---Stopping timers & setting blink to default---');        
-                                                
-                //Start blink led 2 for nex stage
-                Timer.del(tBlink);
-                startBlink(led02, -1);          
-                
-                //set to default
-                GPIO.write(led01, 0);
 
-                //Connected stop checking
-                Timer.del(tCheck);            
+                initWait = w03;
+            }else if(initWait === w03){
+                //Do something after the last minute wait
 
-                //Add status
-                status++;
-
-                print('---MQTT establishing subcription---');                                
-                //Start subscription
-                mqttSubscribe();
-
-                //Start a MQTT check
-                tCheck = startClock(30000, initProcess);
-            }else{
-                print('---Device Loading...---');
+                //Start!
+                start();
             }
-        }, null);
+
+            print('---Increasing wait time to', initWait);
+
+            //Connected stop checking
+            Timer.del(tCheck);            
+
+            //Restart Checking
+            tCheck = startClock(initWait, initProcess);
+
+        }else{
+            print('---Device connected to', sysInfo.wifi.ssid, '---');
+            
+            //Disable the Access Point should be done by web interface
+
+            print('---Stopping timers & setting blink to default---');        
+                                            
+            //Start blink led 2 for nex stage
+            Timer.del(tBlink);
+            startBlink(led02, -1);          
+            
+            //set to default
+            GPIO.write(led01, 0);
+
+            //Connected stop checking
+            Timer.del(tCheck);            
+
+            //Add status
+            status++;
+
+            print('---MQTT establishing subcription---');                                
+            //Start subscription
+            mqttSubscribe();
+
+            //Start a MQTT check
+            tCheck = startClock(30000, initProcess);
+        }
     }else if(status === 1){
         //MQTT Check
         print('---MQTT Check---');                
@@ -237,24 +256,25 @@ function initProcess(){
 }
 
 function start(){
+    //Temp RTC set
+    //setDate(27,09,17);
+    //setTime(23,09,00);
+
     print('---Requesting schedule update---');
-    //Request schedule update
-    //*******************************/
-    //*******************************/            
+    /****Request schedule update****/
+    /*******************************/
 
     print('---Loading todays schedules---');
 
-    //Load todays schedule
-    //*******************************/
+    /*****Load todays schedule******/
     currSchedIndex = 0;
-    //*******************************/
+    /*******************************/
 
     print('---Starting Main loop---');
 
-    //Start main loop
-    //*******************************/
-    tMainLoop = startClock(60000 * 5, loopMain);
-    //*******************************/
+    /*******Start main loop*******/
+    tMainLoop = startClock(60000 * 1, loopMain);
+    /*****************************/
 }
 
 function loopMain(){
@@ -263,6 +283,7 @@ function loopMain(){
     let message = JSON.stringify({
         "device_id": device_id,
         "status": status,
+        "timestamp": getDate() + " " + getTime(),
         free_ram: (Sys.free_ram() / Sys.total_ram()) * 100
     });
 
@@ -282,6 +303,7 @@ function loopMain(){
     }
 
     //Check schedule if reamaining time < 1min
+    
 }
 
 function mqttSubscribe(){
@@ -413,6 +435,39 @@ RPC.addHandler('Wifi.Connected', function(args) {
     };
 });
 
+//For setting time
+RPC.addHandler('RTC.SetTime', function(args) {
+    let time = "";
+
+    //Set time
+    setTime(args.h, args.m, args.s);
+    
+    time =  getTime();
+    return {"time": time};
+});
+
+//For setting date
+RPC.addHandler('RTC.SetDate', function(args) {
+    let date = "";
+
+    //Set time
+    setDate(args.d, args.m, args.y);
+    
+    date =  getDate();
+    return {"date": date};
+});
+
+//For getting time
+RPC.addHandler('RTC.GetTime', function(args) {
+    let time =  getTime();
+    return {"time": time};
+});
+
+//For getting date
+RPC.addHandler('RTC.GetDate', function(args) {
+    let date =  getDate();
+    return {"date": date};
+});
 /*HTTP.query({
     url: "https://api.janmir.me/aws-odtr-v2/check?username=jp.miranda&password=awsol%2B123",
     //url: "https://janmir.me",
