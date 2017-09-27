@@ -37,8 +37,8 @@ config_schema:
   - ["config.ir", "i", 4, {title: "Infrared pin."}]
   - ["config.initWait01", "i", 30, {title: "Initialization wait time in seconds."}]
   - ["config.initWait02", "i", 10, {title: "Initialization wait time in seconds."}]
-  - ["config.initWait03", "i", 60, {title: "Initialization wait time in seconds."}]
-  - ["config.blinkWait", "i", 500, {title: "Blink wait time in miliseconds."}]
+  - ["config.initWait03", "i", 120, {title: "Initialization wait time in seconds."}]
+  - ["config.blinkRate", "i", 500, {title: "Blink wait time in miliseconds."}]
   
   # MQTT
   - ["config.mqttPubTopic", "s", "airfy/pub/device0", {title: "MQTT topic."}]

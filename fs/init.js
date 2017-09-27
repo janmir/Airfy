@@ -21,13 +21,15 @@ let device_id = Cfg.get('device.id');
 
 let cLed = led01;
 let initWait = w01;
-let blinkWait = Cfg.get('config.blinkWait');
+let blinkRate = Cfg.get('config.blinkRate');
 let blinkCount = 0;
 let blinkCMax = 0;
 
-let status = 0; //if wifi initialization done and is connected
+let status = 0;
 let isConnected = false;
 let isMQTTReady = false;
+let hasUpdates = false;
+let currSchedIndex = 0;
 
 let sysInfo = null;
 
@@ -83,7 +85,7 @@ function startBlink(led, count){
     blinkCMax = count;
 
     //While waiting blink * * *
-    tBlink = startClock(blinkWait, function(){
+    tBlink = startClock(blinkRate, function(){
         //call connection check
         GPIO.toggle(cLed);
 
@@ -93,6 +95,7 @@ function startBlink(led, count){
         blinkCount++;
         if(blinkCMax > 0 && blinkCount >= blinkCMax){
             Timer.del(tBlink);
+            GPIO.write(cLed, 0);
         }
     });
 }
@@ -133,7 +136,10 @@ function initProcess(){
                     }, null);
                     initWait = w03;
                 }else if(initWait === w03){
-                    //Do something after a 1-minute wait
+                    //Do something after the last minute wait
+
+                    //Start!
+                    start();
                 }
     
                 print('---Increasing wait time to', initWait);
@@ -211,6 +217,7 @@ function initProcess(){
 
         //Connected stop checking
         Timer.del(tCheck);
+        tCheck = 0;
 
         //Shadow Set
         status++;
@@ -223,15 +230,31 @@ function initProcess(){
         }, null);
 
         if(status === 3){
-            print('---Starting Main loop---');
-            
-            //Start main loop
-            //*******************************/
-            tMainLoop = startClock(60000 * 5, loopMain);
-            //*******************************/
+            //Start!
+            start();
         }
     }
-    
+}
+
+function start(){
+    print('---Requesting schedule update---');
+    //Request schedule update
+    //*******************************/
+    //*******************************/            
+
+    print('---Loading todays schedules---');
+
+    //Load todays schedule
+    //*******************************/
+    currSchedIndex = 0;
+    //*******************************/
+
+    print('---Starting Main loop---');
+
+    //Start main loop
+    //*******************************/
+    tMainLoop = startClock(60000 * 5, loopMain);
+    //*******************************/
 }
 
 function loopMain(){
@@ -245,6 +268,20 @@ function loopMain(){
 
     let ok = MQTT.pub(pTopic, message, 1);
     print('---MQTT Publish Results: ', ok, '---');
+
+    //Check the time RTP
+
+    //Use current index for schedule to shorten search time
+    let index = currSchedIndex++;
+
+    //Fetch new data if available
+    if(hasUpdates){
+        //Get todays data
+
+        hasUpdates = false;
+    }
+
+    //Check schedule if reamaining time < 1min
 }
 
 function mqttSubscribe(){
@@ -253,18 +290,42 @@ function mqttSubscribe(){
         print('---MQTT Message Recieved---');
         print('---Topic:', topic, ', Message:', msg, '---');
         
-        /*let obj = JSON.parse(msg);
+        //Blink all lights 5 times
+        startBlink(led02, 5);
 
-        if(obj.number === bellNumber || obj.number === 0){ //use bell #0 to ring all the bells
-        print('ok');
-        GPIO.write(relayPin, 1);
-        Sys.usleep(20000); //wait for 20msec
-        GPIO.write(relayPin, 0);
-        Sys.usleep(200000); //wait for 200msec
-        GPIO.write(relayPin, 1);
-        Sys.usleep(20000); //wait for 20msec
-        GPIO.write(relayPin, 0);
-        }*/
+        let obj = JSON.parse(msg);
+        if(obj.type){
+            if(obj.type === "ntp"){
+                //Contains date and time
+                //To be saved to RTP module
+            }else if(obj.type === "sched"){
+                //Contains the ff:
+                //  Schedule Array:
+                //      - date: (mon ~ sun) 
+                //        - time: (time to execute the thingy)
+                //          switch: (either on or off)
+                //          data: (data is custom formated ir pulses)
+                //        - time: (time to execute the thingy)
+                //          switch: (either on or off)
+                //          ir: (data is custom formated ir pulses)
+                //      - date: (mon ~ sun) 
+                //        - time: (time to execute the thingy)
+                //          switch: (either on or off)
+                //          ir: (data is custom formated ir pulses)
+                //        - time: (time to execute the thingy)
+                //          switch: (either on or off)
+                //          ir: (data is custom formated ir pulses)
+
+                //Set flag
+                hasUpdates = true;
+                currSchedIndex = 0;
+            }else{
+                //Other special data
+            }
+        }else{
+            print('---MQTT Message Invalid---');
+        }
+
     }, null);
 }
 
@@ -289,22 +350,30 @@ Net.setStatusEventHandler(function(ev, arg) {
     let evs = "";
 
     if (ev === Net.STATUS_DISCONNECTED) {
-      evs = 'DISCONNECTED';
-      isConnected = false;
-    } else if (ev === Net.STATUS_CONNECTING) {
-      evs = 'CONNECTING';
-      isConnected = false;
-    } else if (ev === Net.STATUS_CONNECTED) {
-      evs = 'CONNECTED';
-      isConnected = false;
-    } else if (ev === Net.STATUS_GOT_IP) {
-      evs = 'GOT_IP';
-      isConnected = true;
+        evs = 'DISCONNECTED';
+        status = 0;
+        isConnected = false;
 
-      //Re-init the connection info
-      RPC.call(RPC.LOCAL, 'Sys.GetInfo', null, function (res, ud) {
-        sysInfo = res;        
-      }, null);
+        //Restart the watch-dog?
+        if(tCheck === 0){
+            initWait = w01;
+            tCheck = startClock(initWait, initProcess);
+        }
+ 
+    } else if (ev === Net.STATUS_CONNECTING) {
+        evs = 'CONNECTING';
+        isConnected = false;
+    } else if (ev === Net.STATUS_CONNECTED) {
+        evs = 'CONNECTED';
+        isConnected = false;
+    } else if (ev === Net.STATUS_GOT_IP) {
+        evs = 'GOT_IP';
+        isConnected = true;
+
+        //Re-init the connection info
+        RPC.call(RPC.LOCAL, 'Sys.GetInfo', null, function (res, ud) {
+            sysInfo = res;        
+        }, null);
     }
     print('---Network event:', evs, '---');
   }, null);
