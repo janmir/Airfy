@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import anime from 'animejs'
 import wifi from './wifi.svg';
 import shield from './shield.svg';
 import './App.css';

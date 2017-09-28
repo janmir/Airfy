@@ -2,3 +2,5 @@
 build/
 
 *.pem
+
+\.DS_Store
