@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+import wifi from './wifi.svg';
+import shield from './shield.svg';
 import './App.css';
 
 //Snippets
@@ -15,6 +16,18 @@ class Logo extends Component {
     );
   }
 }
+
+/************Notify************/
+class Notify extends Component {
+  render() {
+    return (
+      <div className={`notify ${this.props.hide  ? 'show':'hide'}`}>
+        You are already connected to {this.props.wifi_ssid}
+      </div>
+    );
+  }
+}
+
 
 /************Input************/
 class InputField extends Component {
@@ -51,9 +64,9 @@ class InputField extends Component {
 
   render() {
     return (
-      <div className="inputField">
+      <div className={`inputField ${this.props.hide  ? 'hide':'show'}`}>
         <div>
-          <div className='first'></div>
+          <div className='first'><img src={wifi} className="icon" alt="wifi ssid" /></div>
           <input type="text"  name="ssid" id="ssid" 
             value={this.state.ssid} 
             onChange={this.onChangeListener} 
@@ -61,7 +74,7 @@ class InputField extends Component {
             className='first'/>
         </div>
         <div>
-          <div className='second'></div>
+          <div className='second'><img src={shield} className="icon" alt="wifi password" /></div>
           <input type="password" name="password" id="password" 
             value={this.state.password} 
             onChange={this.onChangeListener} 
@@ -76,11 +89,26 @@ class InputField extends Component {
 
 /************APP************/
 class App extends Component {
+  constructor(props) {
+    super(props);
+
+    //states
+    this.state = {
+      connected: false,
+      ssid: 'janmir',
+      ip:''
+    };
+  }
+
   render() {
     return (
       <div className="app center">
         <Logo/>
-        <InputField/>
+        <InputField 
+          hide={this.state.connected ? true : false}/>
+        <Notify 
+          wifi_ssid={this.state.ssid} 
+          hide={this.state.connected ? true : false}/>
       </div>
     );
   }
