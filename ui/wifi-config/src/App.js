@@ -132,7 +132,10 @@ class App extends Component {
         <div className="app center">
           <Logo/>
           <div id="counter"></div>
-          <ReactCSSTransitionGroup transitionName="anim" transitionEnterTimeout={500} transitionLeave={false}>
+          <ReactCSSTransitionGroup 
+            transitionName="anim" 
+            transitionEnterTimeout={500} transitionAppearTimeout={500}  transitionLeaveTimeout={300} 
+            transitionAppear={true} transitionEnter={true} transitionLeave={false} >
           </ReactCSSTransitionGroup>
         </div>
       );
@@ -145,8 +148,11 @@ class App extends Component {
         return (
           <div className="app center">
             <Logo/>
-            <ReactCSSTransitionGroup transitionName="anim" transitionEnterTimeout={500} transitionLeave={false}>
-              <Notify 
+            <ReactCSSTransitionGroup 
+              transitionName="anim" 
+              transitionEnterTimeout={500} transitionAppearTimeout={500}  transitionLeaveTimeout={300} 
+              transitionAppear={true} transitionEnter={true} transitionLeave={false} >
+            <Notify 
                 wifi_ssid={this.state.ssid}
                 key='1'/>
             </ReactCSSTransitionGroup>
@@ -157,8 +163,11 @@ class App extends Component {
         return (
           <div className="app center">
             <Logo/>
-            <ReactCSSTransitionGroup transitionName="anim" transitionEnterTimeout={500} transitionLeave={false}>
-              <InputField
+            <ReactCSSTransitionGroup 
+              transitionName="anim" 
+              transitionEnterTimeout={500} transitionAppearTimeout={500}  transitionLeaveTimeout={300} 
+              transitionAppear={true} transitionEnter={true} transitionLeave={false} >
+            <InputField
                 key='0'/>
             </ReactCSSTransitionGroup>
           </div>
