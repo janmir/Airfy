@@ -16,7 +16,7 @@ body {
   display: none; }
 
 .show {
-  display: initial; }
+  display: inherit; }
 
 .center {
   position: absolute;
@@ -26,6 +26,7 @@ body {
 .app {
   top: 200px;
   width: 280px;
+  height: auto;
   max-height: 200px;
   background-color: #ff676a;
   border-radius: 5px;
@@ -87,7 +88,7 @@ body {
   width: 100px;
   height: 78px;
   text-align: center;
-  line-height: 50px; }
+  line-height: 75px; }
 
 .notify {
   width: 100%;
@@ -98,3 +99,12 @@ body {
   height: 17px;
   margin: 12px auto;
   display: block; }
+
+/****************ANIMATIONS & MICRO-INTERACTIONS****************/
+.anim-enter {
+  opacity: 0.01; }
+
+.anim-enter.anim-enter-active {
+  opacity: 2;
+  transition: opacity 0.5s ease-in;
+  transition-delay: 0.1s; }

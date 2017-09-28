@@ -19,7 +19,7 @@ body{
 }
 
 .show{
-    display: initial;
+    display: inherit;
 }
 
 .center {
@@ -31,12 +31,14 @@ body{
 .app{
     top: 200px;
     width: 280px;
+    height:auto;
     max-height: 200px;
     background-color: $color-dialog;
     border-radius: 5px;
     box-shadow: 0px 3px 1px rgba(0, 0, 0, 0.3);
     overflow: hidden;
     padding: 8px;
+    //transition:all 1s ease-out;
 
     div {
         margin: 0 auto;       
@@ -124,7 +126,7 @@ body{
     height: 78px;
     //background-color: #333;
     text-align: center;
-    line-height: 50px;
+    line-height: 75px;
 }
 
 .notify{
@@ -137,4 +139,16 @@ body{
     height: 17px;
     margin: 12px auto;
     display: block;
+}
+
+/****************ANIMATIONS & MICRO-INTERACTIONS****************/
+
+// Load Animations and micro-interactions
+.anim-enter {
+    opacity: 0.01;
+}
+.anim-enter.anim-enter-active{
+    opacity: 2;
+    transition: opacity 0.5s ease-in;
+    transition-delay: 0.1s;
 }
