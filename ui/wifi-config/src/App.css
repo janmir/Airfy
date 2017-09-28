@@ -1,0 +1,78 @@
+/*****************Fonts******************/
+/*****************Colors******************/
+* {
+  font-family: 'Titillium Web', sans-serif !important; }
+
+/****************GLOBALS****************/
+body {
+  background-color: #445252; }
+
+/****************IDs****************/
+#root {
+  position: relative; }
+
+/****************CLASSES****************/
+.center {
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, -50%); }
+
+.app {
+  top: 200px;
+  width: 280px;
+  height: 200px;
+  background-color: #ff676a;
+  border-radius: 5px;
+  box-shadow: 0px 3px 1px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  padding: 8px; }
+  .app div {
+    margin: 0 auto; }
+
+.inputField {
+  width: 100%;
+  height: 135px;
+  overflow: hidden; }
+  .inputField > div {
+    width: 100%px;
+    height: 40px; }
+    .inputField > div div {
+      width: 20%;
+      height: 100%;
+      float: left; }
+      .inputField > div div.first {
+        background-color: #F8937E;
+        border-radius: 3px 0px 0px 0px; }
+      .inputField > div div.second {
+        background-color: #F7E4C5;
+        border-radius: 0px 0px 0px 3px; }
+  .inputField input {
+    border: 0px;
+    outline: none;
+    padding: 0px; }
+    .inputField input.first {
+      border-radius: 0px 3px 0px 0px; }
+    .inputField input.second {
+      border-radius: 0px 0px 3px 0px; }
+    .inputField input::placeholder {
+      color: #888; }
+    .inputField input[type=text], .inputField input[type=password] {
+      width: 80%;
+      height: 100%;
+      float: right;
+      text-indent: 10px;
+      color: #222; }
+    .inputField input[type=button] {
+      height: 40px;
+      width: 100%;
+      margin: 0 auto;
+      border-radius: 3px;
+      cursor: pointer;
+      display: block;
+      margin-top: 2px; }
+
+.logo {
+  width: 100px;
+  height: 78px;
+  text-align: center;
+  line-height: 50px; }

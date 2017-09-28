@@ -248,17 +248,16 @@ function initProcess(){
             GPIO.write(led03, 1); //should be led03
         }, null);
 
-        if(status === 3){
+        //Start a device shadow check
+        initProcess();
+
+    }else if(status === 3){
             //Start!
             start();
-        }
     }
 }
 
 function start(){
-    //Temp RTC set
-    //setDate(27,09,17);
-    //setTime(23,09,00);
 
     print('---Requesting schedule update---');
     /****Request schedule update****/
@@ -375,12 +374,6 @@ Net.setStatusEventHandler(function(ev, arg) {
         evs = 'DISCONNECTED';
         status = 0;
         isConnected = false;
-
-        //Restart the watch-dog?
-        if(tCheck === 0){
-            initWait = w01;
-            tCheck = startClock(initWait, initProcess);
-        }
  
     } else if (ev === Net.STATUS_CONNECTING) {
         evs = 'CONNECTING';
@@ -388,6 +381,13 @@ Net.setStatusEventHandler(function(ev, arg) {
     } else if (ev === Net.STATUS_CONNECTED) {
         evs = 'CONNECTED';
         isConnected = false;
+    
+        //Start initialization/checks
+        if(tCheck === 0){
+            initWait = w02;
+            tCheck = startClock(initWait, initProcess);
+        }
+
     } else if (ev === Net.STATUS_GOT_IP) {
         evs = 'GOT_IP';
         isConnected = true;
@@ -468,6 +468,15 @@ RPC.addHandler('RTC.GetDate', function(args) {
     let date =  getDate();
     return {"date": date};
 });
+
+/***********************************************************/
+/*                                                         */
+/*                                                         */
+/*                      ~~~Gist~~~                         */
+/*                                                         */
+/*                                                         */
+/***********************************************************/
+
 /*HTTP.query({
     url: "https://api.janmir.me/aws-odtr-v2/check?username=jp.miranda&password=awsol%2B123",
     //url: "https://janmir.me",
@@ -479,3 +488,7 @@ RPC.addHandler('RTC.GetDate', function(args) {
         print('---Error:', error);
     }
 });*/
+
+//Temp RTC set
+//setDate(27,09,17);
+//setTime(23,09,00);
