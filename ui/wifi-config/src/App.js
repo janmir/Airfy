@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
+import ReactCSSTransitionGroup from 'react-transition-group/CSSTransitionGroup';
+import axios from 'axios';
 import anime from 'animejs'
+
 import wifi from './wifi.svg';
 import shield from './shield.svg';
 import './App.css';
-import ReactCSSTransitionGroup from 'react-transition-group/CSSTransitionGroup';
 
-//Snippets
+/************Snippets************/
 //<img src={logo} className="App-logo" alt="logo" />
 
 /************Logo************/
@@ -106,21 +108,34 @@ class App extends Component {
   }
 
   componentDidMount() {
-    setTimeout(() => this.setState({ initializing: false }), 3500);
-
-    var obj = { loading: '0%' };
+    var obj = { loading: 0 };
     
-    var JSobject = anime({
+    var load_animation = anime({
       targets: obj,
-      loading: '100%',
+      loading: 100,
       round: 1,
-      easing: 'easeOutSine',
-      duration: 3000,
+      easing: 'linear',
+      duration: 2000,
       update: function() {
         var el = document.querySelector('#counter');
-        el.innerHTML = obj.loading;
+        el.innerHTML = obj.loading + "%";
       }
     });
+
+    let timeOut = Math.floor(Math.random() * 500) + 10 ;
+    setTimeout(() => load_animation.pause(), timeOut);
+
+    axios.get(`http://www.reddit.com/r/japanlife.json`)
+    .then(res => {
+      load_animation.play();
+
+      const posts = res.data.data.children.map(obj => obj.data);
+      console.log(posts);
+
+      //Set the state
+      setTimeout(() => this.setState({ initializing: false }), 2100);
+  });
+
   }
 
   render() {
