@@ -45,12 +45,36 @@ class InputField extends Component {
     //states
     this.state = {
       ssid: '',
-      password: ''
+      password: '',
+      buttonLabel: 'Save',
+      onClickListener: this.onClickListener
     };
   }
 
   onClickListener(event){
     console.info(event);
+
+    this.setState(
+      { 
+        buttonLabel: 'Saving Configuration.' ,
+        onClickListener: null
+      }
+    )
+
+    //Send WIFI configuration - 1st send config change
+    axios.get(`http://www.reddit.com/r/japanlife.json`)
+    .then(res => {
+      const posts = res.data.data.children.map(obj => obj.data);
+      console.log(posts);
+
+      //2nd send Config save
+
+      //update
+      this.setState({ buttonLabel: 'Saved!' })
+    })
+    .catch(err => {
+      return err; 
+    });
   }
 
   onChangeListener(event){
@@ -86,7 +110,9 @@ class InputField extends Component {
             placeholder="Enter Wifi Password"
             className='second'/>
         </div>
-        <input type="button" value="Save" onClick={this.onClickListener}/>
+        <input type="button" 
+            value={this.state.buttonLabel} 
+            onClick={this.state.onClickListener}/>
       </div>
     );
   }
@@ -134,7 +160,10 @@ class App extends Component {
 
       //Set the state
       setTimeout(() => this.setState({ initializing: false }), 2100);
-  });
+    })
+    .catch(err => {
+      return err; 
+    });
 
   }
 
