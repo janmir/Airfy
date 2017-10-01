@@ -32,7 +32,7 @@ body {
   border-radius: 5px;
   box-shadow: 0px 3px 1px rgba(0, 0, 0, 0.3);
   overflow: hidden;
-  padding: 8px; }
+  padding: 15px; }
   .app div {
     margin: 0 auto; }
 
@@ -69,7 +69,10 @@ body {
       font-size: 14px;
       float: right;
       text-indent: 10px;
-      color: #222; }
+      color: #222;
+      transition: background-color 0.8s linear; }
+      .inputField input[type=text]:focus, .inputField input[type=password]:focus {
+        background-color: #f7f7f7; }
     .inputField input[type=button] {
       height: 40px;
       width: 100%;
@@ -77,7 +80,7 @@ body {
       border-radius: 3px;
       cursor: pointer;
       display: block;
-      margin-top: 2px;
+      margin-top: 6px;
       color: #445252;
       font-size: 16px;
       background-color: buttonface; }
@@ -86,7 +89,7 @@ body {
 
 .logo {
   width: 100px;
-  height: 78px;
+  height: 75px;
   text-align: center;
   line-height: 75px; }
 
@@ -105,15 +108,15 @@ body {
   opacity: 0.01; }
 
 .anim-enter.anim-enter-active {
-  opacity: 2;
-  transition: opacity 0.5s ease-in;
+  opacity: 1;
+  transition: opacity 0.5s ease-out;
   transition-delay: 0.1s; }
 
 .anim-appear {
   opacity: 0.01; }
 
 .anim-appear.anim-appear-active {
-  opacity: 2;
+  opacity: 1;
   transition: opacity 0.5s ease-in;
   transition-delay: 0.1s; }
 

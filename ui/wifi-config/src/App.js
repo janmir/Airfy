@@ -41,7 +41,8 @@ class InputField extends Component {
     //bindings
     this.onClickListener = this.onClickListener.bind(this);
     this.onChangeListener = this.onChangeListener.bind(this);
-
+    this.onFocusListener = this.onFocusListener.bind(this);
+    
     //states
     this.state = {
       ssid: '',
@@ -90,6 +91,10 @@ class InputField extends Component {
     this.setState({value: event.target.value});
   }
 
+  onFocusListener(event){
+    event.target.select();
+  }
+
   render() {
       {/* <div className={`inputField ${this.props.hide  ? 'hide':'show'}`}> */}
       return (
@@ -100,7 +105,8 @@ class InputField extends Component {
             value={this.state.ssid} 
             onChange={this.onChangeListener} 
             placeholder="Enter Network SSID"
-            className='first'/>
+            className='first'
+            onFocus={this.onFocusListener}/>
         </div>
         <div>
           <div className='second'><img src={shield} className="icon" alt="wifi password" /></div>
@@ -108,7 +114,8 @@ class InputField extends Component {
             value={this.state.password} 
             onChange={this.onChangeListener} 
             placeholder="Enter Wifi Password"
-            className='second'/>
+            className='second'
+            onFocus={this.onFocusListener}/>
         </div>
         <input type="button" 
             value={this.state.buttonLabel} 
