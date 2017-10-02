@@ -160,7 +160,15 @@ class App extends Component {
     });
 
     let timeOut = Math.floor(Math.random() * 500) + 10 ;
-    setTimeout(() => load_animation.pause(), timeOut);
+    setTimeout(() => {
+      load_animation.pause();
+
+      timeOut = Math.floor(Math.random() * 200) + 10 ;
+      setTimeout(() => {
+        load_animation.pause();
+      }, timeOut);
+  
+    }, timeOut);
 
     axios.get(`http://www.reddit.com/r/japanlife.json`)
     .then(res => {
