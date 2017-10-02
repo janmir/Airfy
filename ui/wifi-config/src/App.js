@@ -5,7 +5,10 @@ import anime from 'animejs'
 
 import wifi from './wifi.svg';
 import shield from './shield.svg';
+import aircon from './aircon.svg';
 import './App.css';
+
+const ISVG = require('react-inlinesvg');
 
 /************Snippets************/
 //<img src={logo} className="App-logo" alt="logo" />
@@ -15,7 +18,8 @@ class Logo extends Component {
   render() {
     return (
       <div className="logo">
-        Logo Here
+        {/* <img src={aircon} className="App-logo" alt="logo" /> */}
+        <ISVG src={aircon}></ISVG>
       </div>
     );
   }
@@ -26,7 +30,7 @@ class Notify extends Component {
   render() {
     return (
       <div className="notify">
-        You are already connected to {this.props.wifi_ssid}
+        You are already connected to "{this.props.wifi_ssid}".
       </div>
     );
   }
@@ -166,12 +170,25 @@ class App extends Component {
       console.log(posts);
 
       //Set the state
-      setTimeout(() => this.setState({ initializing: false }), 2100);
+      setTimeout(() => this.setState({ initializing: false }), 2500);
     })
     .catch(err => {
       return err; 
     });
 
+    //add animation interval
+    setInterval(() => {
+      anime({
+        targets: '#Artboard___373695793 > path',
+        strokeDashoffset: [anime.setDashoffset, 10],
+        easing: 'easeInOutSine',
+        duration: 800,
+        delay: function(el, i) { return i * 100 },
+        direction: 'alternate',
+        //loop: true
+        round: 4
+      });
+    }, 8000);
   }
 
   render() {
