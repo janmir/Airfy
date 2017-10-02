@@ -15,7 +15,7 @@
         </filter>
     </defs>
     <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="Artboard">
+        <g id="Artboard" class="Artboard">
             <g id="Group-2" transform="translate(14.000000, 74.000000)">
                 <mask id="mask-2" fill="white">
                     <use xlink:href="#path-1"></use>

@@ -187,7 +187,7 @@ class App extends Component {
     //add animation interval
     setInterval(() => {
       anime({
-        targets: '#Artboard___373695793 > path',
+        targets: '.Artboard > path',
         strokeDashoffset: [anime.setDashoffset, 10],
         easing: 'easeInOutSine',
         duration: 800,
