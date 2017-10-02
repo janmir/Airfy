@@ -78,14 +78,25 @@ body {
       width: 100%;
       margin: 0 auto;
       border-radius: 3px;
-      cursor: pointer;
       display: block;
       margin-top: 6px;
       color: #445252;
-      font-size: 16px;
-      background-color: buttonface; }
-      .inputField input[type=button]:hover {
-        background-color: #eee; }
+      font-size: 16px; }
+      .inputField input[type=button].clickable {
+        background-color: buttonface;
+        cursor: pointer; }
+        .inputField input[type=button].clickable:hover {
+          background-color: #eee; }
+      .inputField input[type=button].loading {
+        background-color: #A1A1A1;
+        cursor: progress; }
+      .inputField input[type=button].done {
+        background-color: #90DFE5;
+        cursor: default;
+        font-weight: bolder; }
+      .inputField input[type=button].error {
+        background-color: #E24848;
+        cursor: default; }
 
 .logo {
   width: 100%;

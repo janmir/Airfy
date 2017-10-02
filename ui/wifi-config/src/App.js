@@ -10,15 +10,11 @@ import './App.css';
 
 const ISVG = require('react-inlinesvg');
 
-/************Snippets************/
-//<img src={logo} className="App-logo" alt="logo" />
-
 /************Logo************/
 class Logo extends Component {
   render() {
     return (
       <div className="logo">
-        {/* <img src={aircon} className="App-logo" alt="logo" /> */}
         <ISVG src={aircon}></ISVG>
       </div>
     );
@@ -51,9 +47,13 @@ class InputField extends Component {
     this.state = {
       ssid: '',
       password: '',
-      buttonLabel: 'Save',
-      onClickListener: this.onClickListener
+      onClickListener: this.onClickListener,
+      buttonLabel: 'Save Configuration',
+      buttonClass: 'clickable'
     };
+
+    this.ticker = null;
+    this.counter = 0;
   }
 
   onClickListener(event){
@@ -61,8 +61,9 @@ class InputField extends Component {
 
     this.setState(
       { 
-        buttonLabel: 'Saving Configuration.' ,
-        onClickListener: null
+        buttonLabel: 'Saving...' ,
+        onClickListener: null,
+        buttonClass: 'loading'
       }
     )
 
@@ -73,11 +74,69 @@ class InputField extends Component {
       console.log(posts);
 
       //2nd send Config save
+      axios.get(`http://www.reddit.com/r/japanlife.json`)
+      .then(res => {
+        //Done here
+      });
 
       //update
-      this.setState({ buttonLabel: 'Saved!' })
+      this.setState({ 
+        buttonLabel: 'Saved!', 
+        buttonClass: 'done' 
+      });
+
+      //Set state to already connected
+      setTimeout(() => {
+        this.setState({ 
+          buttonLabel: 'Rebooting Device.' 
+        });
+
+        this.ticker = setInterval(()=>{
+          let label = "";
+          if(this.counter < 5){
+            label = this.state.buttonLabel + "."
+          }else{
+            label = "Waiting for Device."
+            this.counter = 0;
+
+            //Check for connection
+            axios.get(`http://www.reddit.com/r/japanlife.jsonx`)
+            .then(res => {
+                //stop animation
+                clearInterval(this.ticker);
+                
+                //refresh page
+                window.location.reload();
+            })
+            .catch(err => {
+              console.log("Not connected...wait...");
+            });
+          }
+
+          this.setState({ 
+            buttonLabel: label
+          });
+
+          this.counter++;
+        }, 1000);
+      },1000);
+
+      //Set state to already connected
+      setTimeout(() => {
+        //clearInterval(this.ticker);
+
+        //refresh page
+        //window.location.reload();
+
+      },10000);
+
     })
     .catch(err => {
+      this.setState({ 
+        buttonLabel: 'Error!!!', 
+        buttonClass: 'error' 
+      });
+
       return err; 
     });
   }
@@ -100,7 +159,6 @@ class InputField extends Component {
   }
 
   render() {
-      {/* <div className={`inputField ${this.props.hide  ? 'hide':'show'}`}> */}
       return (
       <div className="inputField">
         <div>
@@ -122,6 +180,7 @@ class InputField extends Component {
             onFocus={this.onFocusListener}/>
         </div>
         <input type="button" 
+            className={this.state.buttonClass}
             value={this.state.buttonLabel} 
             onClick={this.state.onClickListener}/>
       </div>
@@ -133,6 +192,8 @@ class InputField extends Component {
 class App extends Component {
   constructor(props) {
     super(props);
+
+    this.callback = this.callback.bind(this);
 
     //states
     this.state = {
@@ -198,6 +259,10 @@ class App extends Component {
     }, 8000);
   }
 
+  callback(json){
+    this.setState(json);
+  }
+
   render() {
     const { initializing } = this.state;
     
@@ -243,7 +308,8 @@ class App extends Component {
               transitionEnterTimeout={500} transitionAppearTimeout={500}  transitionLeaveTimeout={300} 
               transitionAppear={true} transitionEnter={true} transitionLeave={false} >
             <InputField
-                key='0'/>
+                key='0'
+                callback={this.callback}/>
             </ReactCSSTransitionGroup>
           </div>
         );

@@ -111,15 +111,34 @@ body{
 
             margin: 0 auto;
             border-radius: 3px;
-            cursor: pointer;
             display: block;
             margin-top: 6px;
             color: #445252;
             font-size: 16px;
-            background-color: buttonface;
             
-            &:hover{
-                background-color: #eee;
+            &.clickable{
+                background-color: buttonface;
+                cursor: pointer;
+
+                &:hover{
+                    background-color: $color-hover;
+                }    
+            }
+
+            &.loading{
+                background-color: $color-loading;
+                cursor: progress;
+            }
+            
+            &.done{
+                background-color: $color-done;
+                cursor: default;
+                font-weight: bolder;
+            }
+            
+            &.error{
+                background-color: $color-error;
+                cursor: default;
             }
         }
     }
