@@ -185,8 +185,7 @@ class App extends Component {
         duration: 800,
         delay: function(el, i) { return i * 100 },
         direction: 'alternate',
-        //loop: true
-        round: 4
+        loop: 4
       });
     }, 8000);
   }
