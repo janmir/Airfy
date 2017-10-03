@@ -8,6 +8,10 @@ import shield from './shield.svg';
 import aircon from './aircon.svg';
 import './App.css';
 
+const DOMAIN = "http://192.168.13.4";
+const SAVE = DOMAIN + `/rpc/Config.Save`
+const SET = DOMAIN + `/rpc/Config.Set`;
+const GET = DOMAIN + `/rpc/Wifi.Connected`
 const ISVG = require('react-inlinesvg');
 
 /************Logo************/
@@ -49,7 +53,8 @@ class InputField extends Component {
       password: '',
       onClickListener: this.onClickListener,
       buttonLabel: 'Save Configuration',
-      buttonClass: 'clickable'
+      buttonClass: 'clickable',
+      disabled: false
     };
 
     this.ticker = null;
@@ -68,13 +73,13 @@ class InputField extends Component {
     )
 
     //Send WIFI configuration - 1st send config change
-    axios.get(`http://www.reddit.com/r/japanlife.json`)
+    axios.get(SET)
     .then(res => {
       const posts = res.data.data.children.map(obj => obj.data);
       console.log(posts);
 
       //2nd send Config save
-      axios.get(`http://www.reddit.com/r/japanlife.json`)
+      axios.get(SAVE)
       .then(res => {
         //Done here
       });
@@ -82,13 +87,14 @@ class InputField extends Component {
       //update
       this.setState({ 
         buttonLabel: 'Saved!', 
-        buttonClass: 'done' 
+        buttonClass: 'done',
+        disabled: true 
       });
 
       //Set state to already connected
       setTimeout(() => {
         this.setState({ 
-          buttonLabel: 'Rebooting Device.' 
+          buttonLabel: 'Rebooting Device' 
         });
 
         this.ticker = setInterval(()=>{
@@ -100,11 +106,11 @@ class InputField extends Component {
             this.counter = 0;
 
             //Check for connection
-            axios.get(`http://www.reddit.com/r/japanlife.jsonx`)
+            axios.get(GET)
             .then(res => {
                 //stop animation
                 clearInterval(this.ticker);
-                
+
                 //refresh page
                 window.location.reload();
             })
@@ -168,7 +174,8 @@ class InputField extends Component {
             onChange={this.onChangeListener} 
             placeholder="Enter Network SSID"
             className='first'
-            onFocus={this.onFocusListener}/>
+            onFocus={this.onFocusListener}
+            disabled={this.state.disabled}/>
         </div>
         <div>
           <div className='second'><img src={shield} className="icon" alt="wifi password" /></div>
@@ -177,12 +184,14 @@ class InputField extends Component {
             onChange={this.onChangeListener} 
             placeholder="Enter Wifi Password"
             className='second'
-            onFocus={this.onFocusListener}/>
+            onFocus={this.onFocusListener}
+            disabled={this.state.disabled}/>
         </div>
         <input type="button" 
             className={this.state.buttonClass}
             value={this.state.buttonLabel} 
-            onClick={this.state.onClickListener}/>
+            onClick={this.state.onClickListener}
+            disabled={this.state.disabled}/>
       </div>
     );
   }
@@ -231,7 +240,15 @@ class App extends Component {
   
     }, timeOut);
 
-    axios.get(`http://www.reddit.com/r/japanlife.json`)
+    /*
+    {
+      "ip": "192.168.13.4",
+      "ssid": "janmir",
+      "connected": true,
+      "status": 1
+    }
+    */
+    axios.get(GET)
     .then(res => {
       load_animation.play();
 
@@ -251,7 +268,7 @@ class App extends Component {
         targets: '.Artboard > path',
         strokeDashoffset: [anime.setDashoffset, 10],
         easing: 'easeInOutSine',
-        duration: 800,
+        duration: 700,
         delay: function(el, i) { return i * 100 },
         direction: 'alternate',
         loop: 4
