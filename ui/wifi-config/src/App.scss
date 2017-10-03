@@ -105,6 +105,12 @@ body{
             &:focus{
                 background-color: $color-focus;
             }
+
+            &.error{
+                &::placeholder{
+                    color: $color-darkred;
+                }
+            }
         }
 
         &[type=button]{

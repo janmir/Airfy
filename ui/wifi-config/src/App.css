@@ -76,6 +76,8 @@ body {
       transition: background-color 0.8s linear; }
       .inputField input[type=text]:focus, .inputField input[type=password]:focus {
         background-color: #f7f7f7; }
+      .inputField input[type=text].error::placeholder, .inputField input[type=password].error::placeholder {
+        color: #E73A38; }
     .inputField input[type=button] {
       height: 50px;
       width: 100%;

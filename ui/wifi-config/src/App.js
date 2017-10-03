@@ -54,6 +54,7 @@ class InputField extends Component {
       onClickListener: this.onClickListener,
       buttonLabel: 'Save Configuration',
       buttonClass: 'clickable',
+      slabelClass: 'clickable',
       disabled: false
     };
 
@@ -63,6 +64,17 @@ class InputField extends Component {
 
   onClickListener(event){
     console.info(event);
+
+    //Check values first
+    if(this.state.ssid.length === 0 || this.state.password.length === 0){
+      if(this.state.ssid.length === 0){
+        this.setState({slabelClass: 'error'})
+      }
+      if(this.state.password.length === 0){
+        this.setState({plabelClass: 'error'})
+      }
+      return;
+    }
 
     this.setState(
       { 
@@ -162,6 +174,15 @@ class InputField extends Component {
 
   onFocusListener(event){
     event.target.select();
+
+    switch(event.target.id){
+      case "ssid":{
+        this.setState({slabelClass: ''})            
+      }break;
+      case "password":{
+        this.setState({plabelClass: ''})            
+      }break;
+    }
   }
 
   render() {
@@ -173,7 +194,7 @@ class InputField extends Component {
             value={this.state.ssid} 
             onChange={this.onChangeListener} 
             placeholder="Enter Network SSID"
-            className='first'
+            className={`first ${this.state.slabelClass}`}
             onFocus={this.onFocusListener}
             disabled={this.state.disabled}/>
         </div>
@@ -183,7 +204,7 @@ class InputField extends Component {
             value={this.state.password} 
             onChange={this.onChangeListener} 
             placeholder="Enter Wifi Password"
-            className='second'
+            className={`second ${this.state.plabelClass}`}
             onFocus={this.onFocusListener}
             disabled={this.state.disabled}/>
         </div>
