@@ -364,7 +364,7 @@ print('---Onload', getInfo(), '---');
 startBlink(led02, -1); //should be led01
 
 //Start initialization/checks
-tCheck = startClock(initWait, initProcess);
+//tCheck = startClock(initWait, initProcess);
 
 // Monitor network connectivity.
 Net.setStatusEventHandler(function(ev, arg) {
@@ -374,7 +374,12 @@ Net.setStatusEventHandler(function(ev, arg) {
         evs = 'DISCONNECTED';
         status = 0;
         isConnected = false;
- 
+
+        if(tCheck === 0){
+            initWait = w01;
+            tCheck = startClock(initWait, initProcess);
+        }
+
     } else if (ev === Net.STATUS_CONNECTING) {
         evs = 'CONNECTING';
         isConnected = false;

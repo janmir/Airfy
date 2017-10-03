@@ -8,10 +8,10 @@ import shield from './shield.svg';
 import aircon from './aircon.svg';
 import './App.css';
 
-const DOMAIN = "http://192.168.13.4";
-const SAVE = DOMAIN + `/rpc/Config.Save`
-const SET = DOMAIN + `/rpc/Config.Set`;
-const GET = DOMAIN + `/rpc/Wifi.Connected`
+const DOMAIN = "https://www.reddit.com/r/3dprinting.json";
+const SAVE = DOMAIN + '';//`/rpc/Config.Save`
+const SET = DOMAIN + '';//`/rpc/Config.Set`;
+const GET = DOMAIN + '';//`/rpc/Wifi.Connected`
 const ISVG = require('react-inlinesvg');
 
 /************Logo************/
