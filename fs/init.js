@@ -369,11 +369,11 @@ startBlink(led02, -1); //should be led01
 // Monitor network connectivity.
 Net.setStatusEventHandler(function(ev, arg) {
     let evs = "";
-
+    isConnected = false;
+    
     if (ev === Net.STATUS_DISCONNECTED) {
         evs = 'DISCONNECTED';
         status = 0;
-        isConnected = false;
 
         if(tCheck === 0){
             initWait = w01;
@@ -382,10 +382,8 @@ Net.setStatusEventHandler(function(ev, arg) {
 
     } else if (ev === Net.STATUS_CONNECTING) {
         evs = 'CONNECTING';
-        isConnected = false;
     } else if (ev === Net.STATUS_CONNECTED) {
         evs = 'CONNECTED';
-        isConnected = false;
     
         //Start initialization/checks
         if(tCheck === 0){
@@ -403,7 +401,8 @@ Net.setStatusEventHandler(function(ev, arg) {
         }, null);
     }
     print('---Network event:', evs, '---');
-  }, null);
+
+}, null);
 
   //Monitor MQTT Connection
 MQTT.setEventHandler(function(conn, ev, edata) {

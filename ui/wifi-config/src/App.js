@@ -8,10 +8,10 @@ import shield from './shield.svg';
 import aircon from './aircon.svg';
 import './App.css';
 
-const DOMAIN = "https://www.reddit.com/r/3dprinting.json";
-const SAVE = DOMAIN + '';//`/rpc/Config.Save`
-const SET = DOMAIN + '';//`/rpc/Config.Set`;
-const GET = DOMAIN + '';//`/rpc/Wifi.Connected`
+const DOMAIN = "";
+const SAVE = DOMAIN +  `/rpc/Config.Save`;
+const SET = DOMAIN + `/rpc/Config.Set`;
+const GET = DOMAIN + `/rpc/Wifi.Connected`;
 const ISVG = require('react-inlinesvg');
 
 /************Logo************/
@@ -85,10 +85,10 @@ class InputField extends Component {
     )
 
     //Send WIFI configuration - 1st send config change
-    axios.get(SET)
+    axios.post(SET)
     .then(res => {
-      const posts = res.data.data.children.map(obj => obj.data);
-      console.log(posts);
+      const data = res.data;
+      console.log(data);
 
       //2nd send Config save
       axios.get(SAVE)
@@ -230,7 +230,7 @@ class App extends Component {
       initializing: true,
       connected: false,
 
-      ssid: 'janmir',
+      ssid: '',
       ip:''
     };
   }
@@ -254,34 +254,26 @@ class App extends Component {
     setTimeout(() => {
       load_animation.pause();
 
-      timeOut = Math.floor(Math.random() * 200) + 10 ;
-      setTimeout(() => {
-        load_animation.pause();
-      }, timeOut);
+      //Get Data
+      axios.get(GET)
+      .then(res => {
+        load_animation.play();
   
+        const data = res.data;
+        console.log(data);
+        
+        //Set the state
+        setTimeout(() => this.setState({
+           initializing: false,
+           connected: data.connected,
+           ssid: data.ssid
+        }), 2500);
+      })
+      .catch(err => {
+        return err; 
+      });
+      
     }, timeOut);
-
-    /*
-    {
-      "ip": "192.168.13.4",
-      "ssid": "janmir",
-      "connected": true,
-      "status": 1
-    }
-    */
-    axios.get(GET)
-    .then(res => {
-      load_animation.play();
-
-      const posts = res.data.data.children.map(obj => obj.data);
-      console.log(posts);
-
-      //Set the state
-      setTimeout(() => this.setState({ initializing: false }), 2500);
-    })
-    .catch(err => {
-      return err; 
-    });
 
     //add animation interval
     setInterval(() => {
